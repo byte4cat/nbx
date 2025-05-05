@@ -45,7 +45,7 @@ func New(cfg Config) (*zap.Logger, error) {
 		}
 
 		core := zapcore.NewCore(encoder, writeSyncer, logLevel)
-		zapLogger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+		zapLogger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(3))
 		zap.ReplaceGlobals(zapLogger)
 
 		for _, lvl := range []zapcore.Level{
