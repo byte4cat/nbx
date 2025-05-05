@@ -1,0 +1,22 @@
+type: Fruit
+description: |
+  Fruit Type Enum
+  This enum represents different types of fruits.
+  Each fruit has a unique value and a label in both English and Traditional Chinese.
+  The comment provides additional information about each fruit.
+values:
+  - name: Apple
+    value: 1
+    comment: "Popular red or green fruit"
+  - name: Banana
+    value: 2
+    comment: "Long and yellow fruit"
+  - name: Cherry
+    value: 3
+    comment: "Small red fruit often used in desserts"
+  - name: Grape
+    value: 4
+    comment: "Small juicy fruit, comes in bunches"
+  - name: Mango
+    value: 5
+    comment: "Tropical sweet fruit"

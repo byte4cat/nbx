@@ -1,0 +1,18 @@
+type: Animal
+description: "Animal Type Enum"
+values:
+  - name: Cat
+    value: "CAT"
+    comment: "Small domesticated feline"
+  - name: Dog
+    value: "DOG"
+    comment: "Loyal domestic animal"
+  - name: Elephant
+    value: "ELEPHANT"
+    comment: "Large mammal with a trunk"
+  - name: Tiger
+    value: "TIGER"
+    comment: "Big wild cat"
+  - name: Koala
+    value: "KOALA"
+    comment: "Marsupial native to Australia"

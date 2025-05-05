@@ -1,0 +1,28 @@
+type: Car
+description: "Represents different types of cars."
+values:
+  - name: Sedan
+    value: 0
+    comment: |
+      A Sedan is a passenger car that usually has
+      a separate trunk. It's often considered a
+      comfortable and practical choice for families
+      and long-distance travel.
+
+  - name: SUV
+    value: 1
+    comment: |
+      An SUV (Sport Utility Vehicle) combines the
+      characteristics of a car and an off-road vehicle.
+      It's popular for its higher ground clearance
+      and more cargo space, making it suitable for
+      outdoor activities and urban driving.
+
+  - name: Coupe
+    value: 2
+    comment: |
+      A Coupe is a two-door car, typically with a
+      sporty design. It is known for its sleek and
+      stylish appearance, though it often has less
+      rear-seat space compared to a sedan.
+

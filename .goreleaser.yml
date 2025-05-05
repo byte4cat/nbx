@@ -1,0 +1,68 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod download
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+
+    # 目標操作系統
+    goos:
+      - linux
+      - windows
+      - darwin
+
+    goarch:
+      - amd64
+      - arm64
+
+    main: ./.
+
+    binary: nbx
+
+    ldflags:
+      - -s -w -X '{{.ModulePath}}/cmd.version={{.Version}}'
+      - -X '{{.ModulePath}}/cmd.commit={{.Commit}}'
+      - -X '{{.ModulePath}}/cmd.date={{.Date}}'
+
+
+archives:
+  - formats:
+      - tar.gz
+      - zip
+
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+
+    files:
+      - none*
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+changelog:
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^chore:'
+
+
+release:
+  github:
+    owner: yimincai
+    name: nbx
+
+  prerelease: auto
+  draft: false
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
