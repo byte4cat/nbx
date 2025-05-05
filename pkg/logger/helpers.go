@@ -4,12 +4,11 @@ import (
 	"fmt"
 
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 // Infof logs a message at Info level using fmt.Sprintf-style formatting.
 func Infof(msg string, args ...any) {
-	logf(zapcore.InfoLevel, msg, args...)
+	mainAppLogger.Info(msg, toZapFields(args)...)
 }
 
 // Info logs a message at Info level with structured fields.
@@ -19,7 +18,7 @@ func Info(msg string, fields ...zap.Field) {
 
 // Debugf logs a message at Debug level using fmt.Sprintf-style formatting.
 func Debugf(msg string, args ...any) {
-	logf(zapcore.DebugLevel, msg, args...)
+	mainAppLogger.Debug(msg, toZapFields(args)...)
 }
 
 // Debug logs a message at Debug level with structured fields.
@@ -29,7 +28,7 @@ func Debug(msg string, fields ...zap.Field) {
 
 // Warnf logs a message at Warn level using fmt.Sprintf-style formatting.
 func Warnf(msg string, args ...any) {
-	logf(zapcore.WarnLevel, msg, args...)
+	mainAppLogger.Warn(msg, toZapFields(args)...)
 }
 
 // Warn logs a message at Warn level with structured fields.
@@ -39,7 +38,7 @@ func Warn(msg string, fields ...zap.Field) {
 
 // Errorf logs a message at Error level using fmt.Sprintf-style formatting.
 func Errorf(msg string, args ...any) {
-	logf(zapcore.ErrorLevel, msg, args...)
+	mainAppLogger.Error(msg, toZapFields(args)...)
 }
 
 // Error logs a message at Error level with structured fields.
@@ -50,7 +49,7 @@ func Error(msg string, fields ...zap.Field) {
 // Fatalf logs a message at Fatal level using fmt.Sprintf-style formatting.
 // The application will terminate immediately.
 func Fatalf(msg string, args ...any) {
-	logf(zapcore.FatalLevel, msg, args...)
+	mainAppLogger.Fatal(msg, toZapFields(args)...)
 }
 
 // Fatal logs a message at Fatal level with structured fields.
@@ -62,7 +61,7 @@ func Fatal(msg string, fields ...zap.Field) {
 // Panicf logs a message at Panic level using fmt.Sprintf-style formatting.
 // It then panics.
 func Panicf(msg string, args ...any) {
-	logf(zapcore.PanicLevel, msg, args...)
+	mainAppLogger.Panic(msg, toZapFields(args)...)
 }
 
 // Panic logs a message at Panic level with structured fields.
@@ -74,24 +73,20 @@ func Panic(msg string, fields ...zap.Field) {
 // DPanicLevel logs are particularly important errors.
 // In development the logger panics after writing the message.
 func DPanicf(msg string, args ...any) {
-	logf(zapcore.DPanicLevel, msg, args...)
+	mainAppLogger.DPanic(msg, toZapFields(args)...)
 }
 
-var levelLoggers = map[zapcore.Level]func(string){
-	zapcore.DebugLevel:  func(msg string) { mainAppLogger.Debug(msg) },
-	zapcore.InfoLevel:   func(msg string) { mainAppLogger.Info(msg) },
-	zapcore.WarnLevel:   func(msg string) { mainAppLogger.Warn(msg) },
-	zapcore.ErrorLevel:  func(msg string) { mainAppLogger.Error(msg) },
-	zapcore.DPanicLevel: func(msg string) { mainAppLogger.DPanic(msg) },
-	zapcore.PanicLevel:  func(msg string) { mainAppLogger.Panic(msg) },
-	zapcore.FatalLevel:  func(msg string) { mainAppLogger.Fatal(msg) },
-}
-
-func logf(level zapcore.Level, msg string, args ...any) {
-	if mainAppLogger == nil {
-		panic("logger not initialized, call logger.New(config) first")
+func toZapFields(args []any) []zap.Field {
+	fields := make([]zap.Field, 0, len(args)/2)
+	for i := 0; i < len(args)-1; i += 2 {
+		key, ok := args[i].(string)
+		if !ok {
+			key = fmt.Sprintf("invalid_key_%d", i)
+		}
+		fields = append(fields, zap.Any(key, args[i+1]))
 	}
-	if logFunc, ok := levelLoggers[level]; ok {
-		logFunc(fmt.Sprintf(msg, args...))
+	if len(args)%2 != 0 {
+		fields = append(fields, zap.Any("invalid_last_key", args[len(args)-1]))
 	}
+	return fields
 }
