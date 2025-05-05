@@ -9,7 +9,6 @@ builds:
   - env:
       - CGO_ENABLED=0
 
-    # 目標操作系統
     goos:
       - linux
       - windows
@@ -28,14 +27,12 @@ builds:
       - -X '{{.ModulePath}}/cmd.commit={{.Commit}}'
       - -X '{{.ModulePath}}/cmd.date={{.Date}}'
 
-
 archives:
   - formats:
       - tar.gz
       - zip
 
     name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-
 
     files:
       - none*
@@ -55,7 +52,6 @@ changelog:
       - '^ci:'
       - '^chore:'
 
-
 release:
   github:
     owner: yimincai
@@ -63,4 +59,3 @@ release:
 
   prerelease: auto
   draft: false
-
