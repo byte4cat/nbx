@@ -11,7 +11,7 @@ func main() {
 		LogFilePath: "./logs/app.log",
 	}
 
-	log, _ := logger.New(cfg)
+	log, _ := logger.New(cfg, 3)
 
 	logger.Debugf("This is a debug message: %s", "Debugging info")
 	logger.Infof("This is an info message: %s", "Hello, World!")

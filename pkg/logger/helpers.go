@@ -14,7 +14,7 @@ func Infof(msg string, args ...any) {
 
 // Info logs a message at Info level with structured fields.
 func Info(msg string, fields ...zap.Field) {
-	zapLogger.Info(msg, fields...)
+	mainAppLogger.Info(msg, fields...)
 }
 
 // Debugf logs a message at Debug level using fmt.Sprintf-style formatting.
@@ -24,7 +24,7 @@ func Debugf(msg string, args ...any) {
 
 // Debug logs a message at Debug level with structured fields.
 func Debug(msg string, fields ...zap.Field) {
-	zapLogger.Debug(msg, fields...)
+	mainAppLogger.Debug(msg, fields...)
 }
 
 // Warnf logs a message at Warn level using fmt.Sprintf-style formatting.
@@ -34,7 +34,7 @@ func Warnf(msg string, args ...any) {
 
 // Warn logs a message at Warn level with structured fields.
 func Warn(msg string, fields ...zap.Field) {
-	zapLogger.Warn(msg, fields...)
+	mainAppLogger.Warn(msg, fields...)
 }
 
 // Errorf logs a message at Error level using fmt.Sprintf-style formatting.
@@ -44,7 +44,7 @@ func Errorf(msg string, args ...any) {
 
 // Error logs a message at Error level with structured fields.
 func Error(msg string, fields ...zap.Field) {
-	zapLogger.Error(msg, fields...)
+	mainAppLogger.Error(msg, fields...)
 }
 
 // Fatalf logs a message at Fatal level using fmt.Sprintf-style formatting.
@@ -56,7 +56,7 @@ func Fatalf(msg string, args ...any) {
 // Fatal logs a message at Fatal level with structured fields.
 // The application will terminate immediately.
 func Fatal(msg string, fields ...zap.Field) {
-	zapLogger.Fatal(msg, fields...)
+	mainAppLogger.Fatal(msg, fields...)
 }
 
 // Panicf logs a message at Panic level using fmt.Sprintf-style formatting.
@@ -68,7 +68,7 @@ func Panicf(msg string, args ...any) {
 // Panic logs a message at Panic level with structured fields.
 // It then panics.
 func Panic(msg string, fields ...zap.Field) {
-	zapLogger.Panic(msg, fields...)
+	mainAppLogger.Panic(msg, fields...)
 }
 
 // DPanicLevel logs are particularly important errors.
@@ -78,20 +78,19 @@ func DPanicf(msg string, args ...any) {
 }
 
 var levelLoggers = map[zapcore.Level]func(string){
-	zapcore.DebugLevel:  func(msg string) { zapLogger.Debug(msg) },
-	zapcore.InfoLevel:   func(msg string) { zapLogger.Info(msg) },
-	zapcore.WarnLevel:   func(msg string) { zapLogger.Warn(msg) },
-	zapcore.ErrorLevel:  func(msg string) { zapLogger.Error(msg) },
-	zapcore.DPanicLevel: func(msg string) { zapLogger.DPanic(msg) },
-	zapcore.PanicLevel:  func(msg string) { zapLogger.Panic(msg) },
-	zapcore.FatalLevel:  func(msg string) { zapLogger.Fatal(msg) },
+	zapcore.DebugLevel:  func(msg string) { mainAppLogger.Debug(msg) },
+	zapcore.InfoLevel:   func(msg string) { mainAppLogger.Info(msg) },
+	zapcore.WarnLevel:   func(msg string) { mainAppLogger.Warn(msg) },
+	zapcore.ErrorLevel:  func(msg string) { mainAppLogger.Error(msg) },
+	zapcore.DPanicLevel: func(msg string) { mainAppLogger.DPanic(msg) },
+	zapcore.PanicLevel:  func(msg string) { mainAppLogger.Panic(msg) },
+	zapcore.FatalLevel:  func(msg string) { mainAppLogger.Fatal(msg) },
 }
 
 func logf(level zapcore.Level, msg string, args ...any) {
-	if zapLogger == nil {
+	if mainAppLogger == nil {
 		panic("logger not initialized, call logger.New(config) first")
 	}
-
 	if logFunc, ok := levelLoggers[level]; ok {
 		logFunc(fmt.Sprintf(msg, args...))
 	}

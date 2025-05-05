@@ -9,21 +9,27 @@ import (
 
 var (
 	loggerOnce     sync.Once
-	zapLogger      *zap.Logger
+	mainAppLogger  *zap.Logger
 	isLevelEnabled = make(map[zapcore.Level]bool)
 )
 
-// New initializes the global zap logger instance using the provided configuration.
-// This function is safe to call multiple times but only initializes the logger once (singleton).
+// New initializes a zap logger instance with the provided configuration and caller skip.
+// This function is safe to call multiple times but the core logger setup happens only once.
+// It returns the configured logger instance.
 //
 // Parameters:
-//   - cfg: Config structure that defines logging mode, level, and file output settings.
+//    - cfg: Config structure.
+//    - callerSkip: The number of stack frames to skip to find the original caller.
 //
 // Returns:
-//   - *zap.Logger: the initialized zap logger instance.
-//   - error: any error encountered during logger setup (currently always nil).
-func New(cfg Config) (*zap.Logger, error) {
-	var err error
+//    - *zap.Logger: the configured zap logger instance.
+//    - error: any error encountered during logger setup.
+//
+// Note: This function does NOT automatically set this logger as the global zap logger.
+// You must call zap.ReplaceGlobals() externally if needed.
+func New(cfg Config, callerSkip int) (*zap.Logger, error) {
+	var core zapcore.Core
+
 	loggerOnce.Do(func() {
 		writeSyncer := getWriterSyncer(cfg.LogFilePath)
 
@@ -44,23 +50,12 @@ func New(cfg Config) (*zap.Logger, error) {
 			logLevel = cfg.LogLevel.ToZapLevel()
 		}
 
-		core := zapcore.NewCore(encoder, writeSyncer, logLevel)
-		zapLogger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(3))
-		zap.ReplaceGlobals(zapLogger)
+		core = zapcore.NewCore(encoder, writeSyncer, logLevel)
 
-		for _, lvl := range []zapcore.Level{
-			zapcore.DebugLevel,
-			zapcore.InfoLevel,
-			zapcore.WarnLevel,
-			zapcore.ErrorLevel,
-			zapcore.DPanicLevel,
-			zapcore.PanicLevel,
-			zapcore.FatalLevel,
-		} {
-			isLevelEnabled[lvl] = zapLogger.Core().Enabled(lvl)
-		}
+		mainAppLogger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(callerSkip))
 	})
-	return zapLogger, err
+
+	return mainAppLogger, nil
 }
 
 // Sugar wraps the Logger to provide a more ergonomic, but slightly slower, API.
@@ -68,9 +63,33 @@ func New(cfg Config) (*zap.Logger, error) {
 // application to use both Loggers and SugaredLoggers, converting between them
 // on the boundaries of performance-sensitive code.
 func Sugar() *zap.SugaredLogger {
-	return zapLogger.Sugar()
+	if mainAppLogger == nil {
+		// Handle case where logger wasn't initialized, maybe return a no-op logger's sugar
+		return zap.NewNop().Sugar()
+	}
+	return mainAppLogger.Sugar()
 }
 
-func IsInitialized() bool {
-	return zapLogger != nil
+// IsLevelEnabled checks if a given level is enabled for the main application logger.
+// Ensure mainAppLogger is initialized before calling.
+func IsLevelEnabled(level zapcore.Level) bool {
+	if mainAppLogger == nil {
+		// Handle case where logger wasn't initialized
+		return false
+	}
+
+	// return false // Level not in map? Should not happen for standard levels
+	return mainAppLogger.Core().Enabled(level)
+}
+
+// InitGlobalLogger initializes the global zap logger with the provided
+// configuration and caller skip.
+func InitGlobalLogger(cfg Config, callerSkip int) (*zap.Logger, error) {
+	l, err := New(cfg, callerSkip)
+	if err != nil {
+		return nil, err
+	}
+	zap.ReplaceGlobals(l)
+
+	return l, nil
 }
