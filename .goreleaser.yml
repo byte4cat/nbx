@@ -64,5 +64,3 @@ release:
   prerelease: auto
   draft: false
 
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
