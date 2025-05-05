@@ -3,6 +3,8 @@ package logger
 import (
 	"sync"
 
+	"errors"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -11,6 +13,7 @@ var (
 	loggerOnce     sync.Once
 	mainAppLogger  *zap.Logger
 	isLevelEnabled = make(map[zapcore.Level]bool)
+	baseLogger     *zap.Logger
 )
 
 // New initializes a zap logger instance with the provided configuration and caller skip.
@@ -52,10 +55,18 @@ func New(cfg Config, callerSkip int) (*zap.Logger, error) {
 
 		core = zapcore.NewCore(encoder, writeSyncer, logLevel)
 
+		baseLogger = zap.New(core)
 		mainAppLogger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(callerSkip))
 	})
 
 	return mainAppLogger, nil
+}
+
+func GetLoggerWithoutCaller(cfg Config) (*zap.Logger, error) {
+	if baseLogger == nil {
+		return nil, errors.New("base logger not initialized")
+	}
+	return baseLogger, nil
 }
 
 // Sugar wraps the Logger to provide a more ergonomic, but slightly slower, API.
