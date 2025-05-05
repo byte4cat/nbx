@@ -19,7 +19,7 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of nbx",
 	Long:  `All software has versions. This is nbx's`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("nbx version: %s\n", version)
+		fmt.Printf("Nbx version: %s\n", version)
 		fmt.Printf("Git Commit: %s\n", commit)
 		fmt.Printf("Build Date: %s\n", date)
 		fmt.Printf("Go Version: %s\n", runtime.Version())

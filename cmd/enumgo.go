@@ -81,7 +81,7 @@ func init() {
 	// Define flags here
 	enumgoCmd.Flags().StringP("in", "i", "", "YAML file or directory containing YAML files defining the enums")
 	enumgoCmd.Flags().StringP("out", "o", "", "Directory to output Go files")
-	enumgoCmd.Flags().String("pkg", "enums", "Target package name") // Default value "enums"
+	enumgoCmd.Flags().StringP("pkg", "p", "enums", "Target package name") // Default value "enums"
 
 	// Mark required flags so cobra automatically checks them
 	enumgoCmd.MarkFlagRequired("in")
