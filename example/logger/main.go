@@ -13,10 +13,10 @@ func main() {
 
 	log, _ := logger.New(cfg, 3)
 
-	logger.Debugf("This is a debug message: %s", "Debugging info")
-	logger.Infof("This is an info message: %s", "Hello, World!")
-	logger.Warnf("This is a warning message: %s", "Be careful!")
-	logger.Errorf("This is an error message: %s", "Something went wrong!")
+	logger.Debug("This is a debug message")
+	logger.Info("This is an info message")
+	logger.Warn("This is a warning message")
+	logger.Error("This is an error message")
 	// logger.Fatalf("This is a fatal message: %s", "Critical error!")
 	// logger.DPanicf("This is a DPanic message: %s", "Panic in development mode!")
 	// logger.Panicf("This is a panic message: %s", "System failure!")
