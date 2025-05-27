@@ -23,6 +23,32 @@ func TestMain(m *testing.M) {
 }
 
 func TestParseMDBUpdateData(t *testing.T) {
+	t.Run("[SUCCESS] should skip fields and returns the correct values", func(t *testing.T) {
+		type testStruct struct {
+			ID        string `json:"id"`
+			FirstName string `json:"firstName"`
+			LastName  string `json:"lastName"`
+			Age       int    `json:"age"`
+		}
+
+		test := testStruct{
+			ID:        "123",
+			FirstName: "John",
+			LastName:  "Doe",
+			Age:       30,
+		}
+
+		expected := map[string]any{
+			"firstName": "John",
+			"age":       30,
+		}
+
+		actual := BuildMongoUpdateMap(test, []string{"id", "lastName"})
+		if !reflect.DeepEqual(actual, expected) {
+			t.Errorf("expected %v, got %v", expected, actual)
+		}
+	})
+
 	t.Run("[SUCCESS] should return map[string]any with the correct values", func(t *testing.T) {
 		type testStruct struct {
 			ID        string `json:"id"`
@@ -83,9 +109,35 @@ func TestParseMDBUpdateData(t *testing.T) {
 }
 
 func TestParseRDBUpdateData(t *testing.T) {
-
 	// set default naming strategy
 	SetDefaultColumnNameFunc(DefaultSnakeCaseNamer)
+
+	t.Run("[SUCCESS] should skip fields and returns the correct values", func(t *testing.T) {
+		type testStruct struct {
+			ID        string `json:"id"`
+			FirstName string `json:"firstName"`
+			LastName  string `json:"lastName"`
+			Age       int    `json:"age"`
+		}
+
+		test := testStruct{
+			ID:        "123",
+			FirstName: "John",
+			LastName:  "Doe",
+			Age:       30,
+		}
+
+		expected := map[string]any{
+			"first_name": "John",
+			"age":        30,
+		}
+
+		actual, err := BuildRDBUpdateMap(test, []string{"id", "last_name"})
+		require.NoError(t, err)
+		if !reflect.DeepEqual(actual, expected) {
+			t.Errorf("expected %v, got %v", expected, actual)
+		}
+	})
 
 	t.Run("[SUCCESS] should return map[string]any with the correct values", func(t *testing.T) {
 		type testStruct struct {
