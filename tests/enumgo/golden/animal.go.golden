@@ -4,7 +4,6 @@ package example
 
 import (
 	"fmt"
-	"strings"
 )
 
 // Animal Type Enum
@@ -24,19 +23,19 @@ const (
 )
 
 var animalToString = map[Animal]string{
-	Animal_Cat:      "cat",
-	Animal_Dog:      "dog",
-	Animal_Elephant: "elephant",
-	Animal_Tiger:    "tiger",
-	Animal_Koala:    "koala",
+	Animal_Cat:      "CAT",
+	Animal_Dog:      "DOG",
+	Animal_Elephant: "ELEPHANT",
+	Animal_Tiger:    "TIGER",
+	Animal_Koala:    "KOALA",
 }
 
 var stringToAnimal = map[string]Animal{
-	"cat":      Animal_Cat,
-	"dog":      Animal_Dog,
-	"elephant": Animal_Elephant,
-	"tiger":    Animal_Tiger,
-	"koala":    Animal_Koala,
+	"CAT":      Animal_Cat,
+	"DOG":      Animal_Dog,
+	"ELEPHANT": Animal_Elephant,
+	"TIGER":    Animal_Tiger,
+	"KOALA":    Animal_Koala,
 }
 
 func (e Animal) String() string {
@@ -49,7 +48,7 @@ func (e Animal) IsValid() bool {
 }
 
 func ParseAnimalString(s string) (Animal, error) {
-	if val, ok := stringToAnimal[strings.ToLower(s)]; ok {
+	if val, ok := stringToAnimal[s]; ok {
 		return val, nil
 	}
 	return "", fmt.Errorf("invalid Animal: %s", s)

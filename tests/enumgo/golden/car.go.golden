@@ -4,7 +4,6 @@ package example
 
 import (
 	"fmt"
-	"strings"
 )
 
 // Represents different types of cars.
@@ -30,15 +29,15 @@ const (
 )
 
 var carToString = map[Car]string{
-	Car_Sedan: "sedan",
-	Car_SUV:   "suv",
-	Car_Coupe: "coupe",
+	Car_Sedan: "Sedan",
+	Car_SUV:   "SUV",
+	Car_Coupe: "Coupe",
 }
 
 var stringToCar = map[string]Car{
-	"sedan": Car_Sedan,
-	"suv":   Car_SUV,
-	"coupe": Car_Coupe,
+	"Sedan": Car_Sedan,
+	"SUV":   Car_SUV,
+	"Coupe": Car_Coupe,
 }
 
 func (e Car) String() string {
@@ -51,7 +50,7 @@ func (e Car) IsValid() bool {
 }
 
 func ParseCarString(s string) (Car, error) {
-	if val, ok := stringToCar[strings.ToLower(s)]; ok {
+	if val, ok := stringToCar[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("invalid Car: %s", s)

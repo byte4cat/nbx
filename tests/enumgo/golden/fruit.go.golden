@@ -4,7 +4,6 @@ package example
 
 import (
 	"fmt"
-	"strings"
 )
 
 // Fruit Type Enum
@@ -27,19 +26,19 @@ const (
 )
 
 var fruitToString = map[Fruit]string{
-	Fruit_Apple:  "apple",
-	Fruit_Banana: "banana",
-	Fruit_Cherry: "cherry",
-	Fruit_Grape:  "grape",
-	Fruit_Mango:  "mango",
+	Fruit_Apple:  "Apple",
+	Fruit_Banana: "Banana",
+	Fruit_Cherry: "Cherry",
+	Fruit_Grape:  "Grape",
+	Fruit_Mango:  "Mango",
 }
 
 var stringToFruit = map[string]Fruit{
-	"apple":  Fruit_Apple,
-	"banana": Fruit_Banana,
-	"cherry": Fruit_Cherry,
-	"grape":  Fruit_Grape,
-	"mango":  Fruit_Mango,
+	"Apple":  Fruit_Apple,
+	"Banana": Fruit_Banana,
+	"Cherry": Fruit_Cherry,
+	"Grape":  Fruit_Grape,
+	"Mango":  Fruit_Mango,
 }
 
 func (e Fruit) String() string {
@@ -52,7 +51,7 @@ func (e Fruit) IsValid() bool {
 }
 
 func ParseFruitString(s string) (Fruit, error) {
-	if val, ok := stringToFruit[strings.ToLower(s)]; ok {
+	if val, ok := stringToFruit[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("invalid Fruit: %s", s)
