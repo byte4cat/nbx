@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/yimincai/nbx/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // DefaultColumnNameFunc is the type for a function that provides a default column name
@@ -162,10 +163,14 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 			bsonTagValue := field.Tag.Get("bson")
 			jsonTagValue := field.Tag.Get("json")
 
-			logger.Debugf("Processing field: %s, gormTag: %s, bsonTag: %s, jsonTag: %s", field.Name, gormTagValue, bsonTagValue, jsonTagValue)
+			logger.Debug("processing field", zap.String("fieldName", field.Name),
+				zap.String("gormTag", gormTagValue), zap.String("bsonTag", bsonTagValue),
+				zap.String("jsonTag", jsonTagValue),
+			)
+
 			// Check for embedded struct (anonymous && has gorm:"embedded" tag)
 			if field.Anonymous && strings.Contains(gormTagValue, "embedded") {
-				logger.Debugf("Processing embedded field: %s", field.Name)
+				logger.Debug("processing embedded", zap.String("fieldName", field.Name))
 				// Recursively process embedded struct fields
 				// Handle potential nil pointer embedded structs
 				if fieldVal.Kind() == reflect.Ptr && fieldVal.IsNil() {
