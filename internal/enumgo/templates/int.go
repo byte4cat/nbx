@@ -6,7 +6,6 @@ package {{.Package}}
 
 import (
 	"fmt"
-	"strings"
 )
 
 {{- if .Def.Description }}
@@ -25,13 +24,13 @@ const (
 
 var {{.Def.Type | lower}}ToString = map[{{.Def.Type}}]string{
 {{- range .Def.Values }}
-	{{$.Def.Type}}_{{.Name}}: "{{.Name | lower}}",
+	{{$.Def.Type}}_{{.Name}}: "{{.Name }}",
 {{- end }}
 }
 
 var stringTo{{.Def.Type}} = map[string]{{.Def.Type}}{
 {{- range .Def.Values }}
-	"{{.Name | lower}}": {{$.Def.Type}}_{{.Name}},
+	"{{.Name }}": {{$.Def.Type}}_{{.Name}},
 {{- end }}
 }
 
@@ -45,7 +44,7 @@ func (e {{.Def.Type}}) IsValid() bool {
 }
 
 func Parse{{.Def.Type}}String(s string) ({{.Def.Type}}, error) {
-	if val, ok := stringTo{{.Def.Type}}[strings.ToLower(s)]; ok {
+	if val, ok := stringTo{{.Def.Type}}[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("invalid {{.Def.Type}}: %s", s)
