@@ -1,6 +1,7 @@
 package pbconv
 
 import (
+	"database/sql"
 	"encoding/json"
 	"testing"
 	"time"
@@ -11,31 +12,31 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type testPb struct {
-	Fruit     string
-	CreatedAt *timestamppb.Timestamp
-	UpdatedAt *timestamppb.Timestamp
-	DeletedAt *timestamppb.Timestamp
-}
-
-type testFrom struct {
-	Fruit     string
-	CreatedAt time.Time
-	UpdatedAt *time.Time
-	DeletedAt *time.Time
-}
-
 func TestTimeToPbTimestamp(t *testing.T) {
 	t.Run("[SUCCESS] TimeToPbTimestamp in struct", func(t *testing.T) {
+		type testPb struct {
+			Fruit     string
+			CreatedAt *timestamppb.Timestamp
+			UpdatedAt *timestamppb.Timestamp
+			DeletedAt *timestamppb.Timestamp
+		}
+
+		type testFrom struct {
+			Fruit     string
+			CreatedAt time.Time
+			UpdatedAt *time.Time
+			DeletedAt *time.Time
+		}
+
 		pbObj := testPb{
 			Fruit: "Apple",
 		}
 
-		ct := time.Now()
+		now := time.Now()
 		fromObj := testFrom{
 			Fruit:     "Apple",
-			CreatedAt: ct.AddDate(0, 0, -1),
-			UpdatedAt: &ct,
+			CreatedAt: now.AddDate(0, 0, -1),
+			UpdatedAt: &now,
 			DeletedAt: nil,
 		}
 
@@ -51,6 +52,20 @@ func TestTimeToPbTimestamp(t *testing.T) {
 	})
 
 	t.Run("[SUCCESS] TimeToPbTimestamp in slice of struct", func(t *testing.T) {
+		type testPb struct {
+			Fruit     string
+			CreatedAt *timestamppb.Timestamp
+			UpdatedAt *timestamppb.Timestamp
+			DeletedAt *timestamppb.Timestamp
+		}
+
+		type testFrom struct {
+			Fruit     string
+			CreatedAt time.Time
+			UpdatedAt *time.Time
+			DeletedAt *time.Time
+		}
+
 		pbObjSlice := []testPb{
 			{
 				Fruit: "Apple",
@@ -60,18 +75,18 @@ func TestTimeToPbTimestamp(t *testing.T) {
 			},
 		}
 
-		ct := time.Now()
+		now := time.Now()
 		fromObjSlice := []testFrom{
 			{
 				Fruit:     "Apple",
-				CreatedAt: ct.AddDate(0, 0, -1),
-				UpdatedAt: &ct,
+				CreatedAt: now.AddDate(0, 0, -1),
+				UpdatedAt: &now,
 				DeletedAt: nil,
 			},
 			{
 				Fruit:     "Banana",
-				CreatedAt: ct.AddDate(0, 0, -1),
-				UpdatedAt: &ct,
+				CreatedAt: now.AddDate(0, 0, -1),
+				UpdatedAt: &now,
 				DeletedAt: nil,
 			},
 		}
@@ -175,15 +190,29 @@ func TestTimeToPbTimestamp(t *testing.T) {
 	})
 
 	t.Run("[SUCCESS] Override default fields", func(t *testing.T) {
+		type testPb struct {
+			Fruit     string
+			CreatedAt *timestamppb.Timestamp
+			UpdatedAt *timestamppb.Timestamp
+			DeletedAt *timestamppb.Timestamp
+		}
+
+		type testFrom struct {
+			Fruit     string
+			CreatedAt time.Time
+			UpdatedAt *time.Time
+			DeletedAt *time.Time
+		}
+
 		pbObj := testPb{
 			Fruit: "Apple",
 		}
 
-		ct := time.Now()
+		now := time.Now()
 		fromObj := testFrom{
 			Fruit:     "Apple",
-			CreatedAt: ct.AddDate(0, 0, -1),
-			UpdatedAt: &ct,
+			CreatedAt: now.AddDate(0, 0, -1),
+			UpdatedAt: &now,
 			DeletedAt: nil,
 		}
 
@@ -198,5 +227,85 @@ func TestTimeToPbTimestamp(t *testing.T) {
 
 		assert.Nil(t, pbObj.DeletedAt)
 		assert.Nil(t, fromObj.DeletedAt)
+	})
+
+	t.Run("[SUCCESS] Convert sql.NullTime to *timestamppb.Timestamp", func(t *testing.T) {
+		type testPb struct {
+			Fruit     string
+			CreatedAt *timestamppb.Timestamp
+			UpdatedAt *timestamppb.Timestamp
+			DeletedAt *timestamppb.Timestamp
+		}
+
+		type testFrom struct {
+			Fruit     string
+			CreatedAt sql.NullTime
+			UpdatedAt sql.NullTime
+			DeletedAt sql.NullTime
+		}
+
+		pbObj := testPb{
+			Fruit: "Apple",
+		}
+
+		now := time.Now()
+		fromObj := testFrom{
+			Fruit:     "Apple",
+			CreatedAt: sql.NullTime{Time: now.AddDate(0, 0, -1), Valid: true},
+			UpdatedAt: sql.NullTime{Time: now, Valid: true},
+			DeletedAt: sql.NullTime{Valid: false}, // Simulating a null value
+		}
+
+		err := StructTimeToPbTimestamp(&pbObj, &fromObj, nil)
+
+		assert.Nil(t, err)
+		assert.Equal(t, fromObj.Fruit, pbObj.Fruit)
+		assert.False(t, fromObj.DeletedAt.Valid)
+		assert.Equal(t, fromObj.CreatedAt.Time.UTC().Format(time.RFC3339), pbObj.CreatedAt.AsTime().UTC().Format(time.RFC3339))
+		assert.Equal(t, fromObj.UpdatedAt.Time.UTC().Format(time.RFC3339), pbObj.UpdatedAt.AsTime().UTC().Format(time.RFC3339))
+
+		assert.Nil(t, pbObj.DeletedAt)
+		assert.Equal(t, pbObj.CreatedAt.AsTime().UTC().Format(time.RFC3339), fromObj.CreatedAt.Time.UTC().Format(time.RFC3339))
+		assert.Equal(t, pbObj.UpdatedAt.AsTime().UTC().Format(time.RFC3339), fromObj.UpdatedAt.Time.UTC().Format(time.RFC3339))
+	})
+
+	t.Run("[SUCCESS] Convert *sql.NullTime to *timestamppb.Timestamp", func(t *testing.T) {
+		type testPb struct {
+			Fruit     string
+			CreatedAt *timestamppb.Timestamp
+			UpdatedAt *timestamppb.Timestamp
+			DeletedAt *timestamppb.Timestamp
+		}
+
+		type testFrom struct {
+			Fruit     string
+			CreatedAt *sql.NullTime
+			UpdatedAt *sql.NullTime
+			DeletedAt *sql.NullTime
+		}
+
+		pbObj := testPb{
+			Fruit: "Apple",
+		}
+
+		now := time.Now()
+		fromObj := testFrom{
+			Fruit:     "Apple",
+			CreatedAt: &sql.NullTime{Time: now.AddDate(0, 0, -1), Valid: true},
+			UpdatedAt: &sql.NullTime{Time: now, Valid: true},
+			DeletedAt: &sql.NullTime{Valid: false}, // Simulating a null value
+		}
+
+		err := StructTimeToPbTimestamp(&pbObj, &fromObj, nil)
+
+		assert.Nil(t, err)
+		assert.Equal(t, fromObj.Fruit, pbObj.Fruit)
+		assert.False(t, fromObj.DeletedAt.Valid)
+		assert.Equal(t, fromObj.CreatedAt.Time.UTC().Format(time.RFC3339), pbObj.CreatedAt.AsTime().UTC().Format(time.RFC3339))
+		assert.Equal(t, fromObj.UpdatedAt.Time.UTC().Format(time.RFC3339), pbObj.UpdatedAt.AsTime().UTC().Format(time.RFC3339))
+
+		assert.Nil(t, pbObj.DeletedAt)
+		assert.Equal(t, pbObj.CreatedAt.AsTime().UTC().Format(time.RFC3339), fromObj.CreatedAt.Time.UTC().Format(time.RFC3339))
+		assert.Equal(t, pbObj.UpdatedAt.AsTime().UTC().Format(time.RFC3339), fromObj.UpdatedAt.Time.UTC().Format(time.RFC3339))
 	})
 }

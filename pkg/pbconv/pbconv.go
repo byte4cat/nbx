@@ -1,6 +1,7 @@
 package pbconv
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
 	"sync"
@@ -49,7 +50,7 @@ func SliceStructTimeToPbTimestamp(pbObjSlice any, fromObjSlice any, processField
 
 	var wg sync.WaitGroup
 	// Iterate and process each element concurrently
-	for i := 0; i < pbObjSliceValue.Len(); i++ {
+	for i := range pbObjSliceValue.Len() {
 		pbObj := pbObjSliceValue.Index(i).Addr().Interface()
 		fromObj := fromObjSliceValue.Index(i).Addr().Interface()
 
@@ -137,7 +138,7 @@ func StructTimeToPbTimestamp(pbObj any, fromObj any, processFields *[]string, di
 			continue
 		}
 
-		// Only process time.Time or *time.Time fields
+		// Process time.Time or *time.Time fields
 		if fromField.Type() == reflect.TypeOf(time.Time{}) || fromField.Type() == reflect.TypeOf(&time.Time{}) {
 			if fromField.Kind() == reflect.Ptr && fromField.IsNil() {
 				continue
@@ -149,10 +150,40 @@ func StructTimeToPbTimestamp(pbObj any, fromObj any, processFields *[]string, di
 				sourceTime = fromField.Interface().(time.Time)
 			}
 
-			ts := timestamppb.New(sourceTime)
-			if pbField.CanSet() {
-				pbField.Set(reflect.ValueOf(ts).Convert(pbField.Type()))
+			if !pbField.CanSet() {
+				continue
 			}
+
+			ts := timestamppb.New(sourceTime)
+			pbField.Set(reflect.ValueOf(ts).Convert(pbField.Type()))
+
+			continue
+		}
+
+		// Process sql.NullTime and *sql.NullTime fields
+		if fromField.Type() == reflect.TypeOf(sql.NullTime{}) || fromField.Type() == reflect.TypeOf(&sql.NullTime{}) {
+			if fromField.Kind() == reflect.Ptr && fromField.IsNil() {
+				continue
+			}
+			var sourceNullTime sql.NullTime
+			if fromField.Kind() == reflect.Ptr {
+				sourceNullTime = fromField.Elem().Interface().(sql.NullTime)
+			} else {
+				sourceNullTime = fromField.Interface().(sql.NullTime)
+			}
+
+			if !pbField.CanSet() {
+				continue
+			}
+
+			if sourceNullTime.Valid {
+				ts := timestamppb.New(sourceNullTime.Time)
+				pbField.Set(reflect.ValueOf(ts).Convert(pbField.Type()))
+			} else {
+				pbField.Set(reflect.Zero(pbField.Type()))
+			}
+
+			continue
 		}
 	}
 
