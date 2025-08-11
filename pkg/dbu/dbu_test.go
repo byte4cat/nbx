@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/byte4cat/nbx/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/yimincai/nbx/pkg/logger"
 )
 
 func TestMain(m *testing.M) {

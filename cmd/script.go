@@ -4,9 +4,9 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"github.com/byte4cat/nbx/internal/script"
+	"github.com/byte4cat/nbx/pkg/clog"
 	"github.com/spf13/cobra"
-	"github.com/yimincai/nbx/internal/script"
-	"github.com/yimincai/nbx/pkg/clog"
 )
 
 // scriptsCmd represents the scripts command

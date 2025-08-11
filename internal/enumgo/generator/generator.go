@@ -9,8 +9,8 @@ import (
 	"strings"
 	"text/template"
 
+	etpl "github.com/byte4cat/nbx/internal/enumgo/templates"
 	"github.com/goccy/go-yaml"
-	etpl "github.com/yimincai/nbx/internal/enumgo/templates"
 )
 
 type EnumValue struct {

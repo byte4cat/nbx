@@ -1,4 +1,4 @@
-module github.com/yimincai/nbx
+module github.com/byte4cat/nbx
 
 go 1.24.2
 

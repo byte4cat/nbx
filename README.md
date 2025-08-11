@@ -21,5 +21,5 @@ The toolbox currently includes the following key packages and CLI tools:
 To get the `nbx` toolbox and its source code, you can clone the repository:
 
 ```bash
-git clone [https://github.com/yimincai/nbx.git](https://github.com/yimincai/nbx.git)
+git clone [https://github.com/byte4cat/nbx.git](https://github.com/yimincai/nbx.git)
 ```

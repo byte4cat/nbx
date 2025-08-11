@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/yimincai/nbx/pkg/logger"
+	"github.com/byte4cat/nbx/pkg/logger"
 	"go.uber.org/zap"
 )
 

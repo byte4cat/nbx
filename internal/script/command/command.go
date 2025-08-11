@@ -8,8 +8,8 @@ import (
 	"os/exec"
 	"sync"
 
+	"github.com/byte4cat/nbx/pkg/clog"
 	"github.com/fatih/color"
-	"github.com/yimincai/nbx/pkg/clog"
 )
 
 // Run executes a command and prints its output line by line in real-time

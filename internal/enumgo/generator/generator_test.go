@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/byte4cat/nbx/internal/enumgo/generator"
 	"github.com/stretchr/testify/assert"
-	"github.com/yimincai/nbx/internal/enumgo/generator"
 )
 
 func TestEnumGeneration_Golden(t *testing.T) {

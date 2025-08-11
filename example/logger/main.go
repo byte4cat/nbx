@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/yimincai/nbx/pkg/logger"
-	"github.com/yimincai/nbx/pkg/logger/adapter"
+	"github.com/byte4cat/nbx/pkg/logger"
+	"github.com/byte4cat/nbx/pkg/logger/adapter"
 )
 
 func main() {

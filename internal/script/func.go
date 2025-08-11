@@ -3,9 +3,9 @@ package script
 import (
 	"strings"
 
+	"github.com/byte4cat/nbx/internal/script/command"
+	"github.com/byte4cat/nbx/pkg/clog"
 	"github.com/fatih/color"
-	"github.com/yimincai/nbx/internal/script/command"
-	"github.com/yimincai/nbx/pkg/clog"
 )
 
 type Func interface {

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/byte4cat/nbx/internal/enumgo/generator"
 	"github.com/spf13/cobra"
-	"github.com/yimincai/nbx/internal/enumgo/generator"
 )
 
 // enumgoCmd represents the enumgo command
