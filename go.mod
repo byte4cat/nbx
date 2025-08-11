@@ -1,4 +1,4 @@
-module github.com/yimincai/nbx
+module github.com/byte4cat/nbx
 
 go 1.24.2
 
@@ -6,6 +6,7 @@ require (
 	github.com/goccy/go-yaml v1.17.1
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.2
 	github.com/stretchr/testify v1.10.0
+	github.com/yimincai/nbx v1.1.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/protobuf v1.36.6
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
