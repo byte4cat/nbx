@@ -54,7 +54,7 @@ changelog:
 
 release:
   github:
-    owner: yimincai
+    owner: byte4cat
     name: nbx
 
   prerelease: auto
