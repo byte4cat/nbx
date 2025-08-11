@@ -3,7 +3,7 @@ package utils
 import (
 	"os/user"
 
-	"github.com/byte4cat/nbx/pkg/clog"
+	"github.com/byte4cat/nbx/pkg/clog/v2"
 )
 
 // GetUsernameOrPanic gets the current system username

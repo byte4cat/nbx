@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/byte4cat/nbx/internal/enumgo/generator"
+	"github.com/byte4cat/nbx/internal/enumgo/generator/v2"
 	"github.com/spf13/cobra"
 )
 

@@ -3,8 +3,8 @@ package script
 import (
 	"strings"
 
-	"github.com/byte4cat/nbx/internal/script/command"
-	"github.com/byte4cat/nbx/pkg/clog"
+	"github.com/byte4cat/nbx/internal/script/command/v2"
+	"github.com/byte4cat/nbx/pkg/clog/v2"
 	"github.com/fatih/color"
 )
 

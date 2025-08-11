@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/template"
 
-	etpl "github.com/byte4cat/nbx/internal/enumgo/templates"
+	etpl "github.com/byte4cat/nbx/internal/enumgo/templates/v2"
 	"github.com/goccy/go-yaml"
 )
 

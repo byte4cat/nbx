@@ -3,7 +3,7 @@ Copyright © 2025 Yi Min, Cai <bravc29229@gmail.com>
 */
 package main
 
-import "github.com/byte4cat/nbx/cmd"
+import "github.com/byte4cat/nbx/cmd/v2"
 
 func main() {
 	cmd.Execute()

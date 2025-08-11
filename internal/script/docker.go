@@ -1,7 +1,7 @@
 package script
 
 import (
-	"github.com/byte4cat/nbx/internal/script/utils"
+	"github.com/byte4cat/nbx/internal/script/utils/v2"
 )
 
 // UbuntuInstallDocker installs docker on Ubuntu system

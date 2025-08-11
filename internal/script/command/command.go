@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"sync"
 
-	"github.com/byte4cat/nbx/pkg/clog"
+	"github.com/byte4cat/nbx/pkg/clog/v2"
 	"github.com/fatih/color"
 )
 
