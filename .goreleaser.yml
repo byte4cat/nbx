@@ -54,6 +54,7 @@ changelog:
 
 release:
   github:
+    owner: 'byte4cat'
     name: nbx
 
   prerelease: auto
