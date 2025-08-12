@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/byte4cat/nbx/internal/enumgo/generator/v2"
+	"github.com/byte4cat/nbx/v2/internal/enumgo/generator"
 	"github.com/stretchr/testify/assert"
 )
 

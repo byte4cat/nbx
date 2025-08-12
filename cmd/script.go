@@ -4,8 +4,8 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/byte4cat/nbx/internal/script/v2"
-	"github.com/byte4cat/nbx/pkg/clog/v2"
+	"github.com/byte4cat/nbx/v2/internal/script"
+	"github.com/byte4cat/nbx/v2/pkg/clog"
 	"github.com/spf13/cobra"
 )
 

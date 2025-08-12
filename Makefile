@@ -17,7 +17,7 @@ release:
 gen_example: clean_example
 	@echo "Generating example..."
 	@mkdir -p $(OUTPUT_DIR)
-	@go run . enumgo -in $(INPUT_DIR) -out $(OUTPUT_DIR) -pkg example
+	@go run . enumgo -i $(INPUT_DIR) -o $(OUTPUT_DIR) -p example
 	@gofmt -w .
 
 clean_example:

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/byte4cat/nbx/pkg/logger/v2"
+	"github.com/byte4cat/nbx/v2/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

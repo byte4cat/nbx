@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/byte4cat/nbx/internal/enumgo/generator/v2"
+	"github.com/byte4cat/nbx/v2/internal/enumgo/generator"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +21,8 @@ The generated Go files will be placed in the specified output directory with the
 
 Example:
   enumgo -in enums.yaml -out ./pkg/enums
-  enumgo -in ./yaml/enums -out ./internal/enums -pkg myenums`,
+  enumgo -in ./yaml/enums -out ./internal/enums -pkg myenums,
+  enumgo -i ./yaml/enums -o ./internal/enums -p myenums`,
 
 	RunE: func(cmd *cobra.Command, args []string) error { // Use RunE to return an error
 		input, _ := cmd.Flags().GetString("in")

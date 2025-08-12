@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/byte4cat/nbx/pkg/logger/v2"
+	"github.com/byte4cat/nbx/v2/pkg/logger"
 	"go.uber.org/zap"
 )
 
@@ -195,8 +195,8 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 				parts := strings.SplitSeq(gormTagValue, ";")
 				for part := range parts {
 					part = strings.TrimSpace(part)
-					if strings.HasPrefix(part, "column:") {
-						mapKey = strings.TrimPrefix(part, "column:")
+					if after, ok := strings.CutPrefix(part, "column:"); ok {
+						mapKey = after
 						mapKey = strings.TrimSpace(mapKey)
 						break
 					}
