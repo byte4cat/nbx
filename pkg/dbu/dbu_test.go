@@ -242,7 +242,7 @@ func TestParseRDBUpdateData(t *testing.T) {
 			FirstName string `json:"firstName"`
 			LastName  string `json:"lastName"`
 			Age       int    `json:"age"`
-			Address   `gorm:"embedded" jjson:"address"`
+			Address   `gorm:"embedded" json:"address"`
 		}
 
 		test := user{
@@ -459,6 +459,109 @@ func Test_toSnakeCase(t *testing.T) {
 
 		assert.Equal(t, expected, actual)
 	})
+}
+
+func TestBuildRDBUpdateMap_EmbeddedPrefix(t *testing.T) {
+	SetDefaultColumnNameFunc(DefaultSnakeCaseNamer)
+
+	type Details struct {
+		Text string `json:"text"`
+		PDF  string `json:"pdf"`
+	}
+
+	type Travel struct {
+		ID      string `json:"id"`
+		Name    string `json:"name"`
+		Details `gorm:"embedded;embeddedPrefix:details_" json:"details"`
+	}
+
+	obj := Travel{
+		ID:   "123",
+		Name: "Taipei Trip",
+		Details: Details{
+			Text: "hello",
+			PDF:  "url.pdf",
+		},
+	}
+
+	expected := map[string]any{
+		"id":           "123",
+		"name":         "Taipei Trip",
+		"details_text": "hello",
+		"details_pdf":  "url.pdf",
+	}
+
+	result, err := BuildRDBUpdateMap(obj, nil)
+	require.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
+
+func TestBuildRDBUpdateMap_EmbeddedPrefixWithPointer(t *testing.T) {
+	SetDefaultColumnNameFunc(DefaultSnakeCaseNamer)
+
+	type Details struct {
+		Text *string `json:"text"`
+		PDF  *string `json:"pdf"`
+	}
+
+	type Travel struct {
+		ID      string   `json:"id"`
+		Name    string   `json:"name"`
+		Details *Details `gorm:"embedded;embeddedPrefix:details_" json:"details"`
+	}
+
+	text := "the text"
+	pdf := "file.pdf"
+	obj := Travel{
+		ID:   "999",
+		Name: "Kaohsiung",
+		Details: &Details{
+			Text: &text,
+			PDF:  &pdf,
+		},
+	}
+
+	expected := map[string]any{
+		"id":           "999",
+		"name":         "Kaohsiung",
+		"details_text": "the text",
+		"details_pdf":  "file.pdf",
+	}
+
+	result, err := BuildRDBUpdateMap(obj, nil)
+	require.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
+
+func TestBuildRDBUpdateMap_EmbeddedPrefix_SkipNilPointer(t *testing.T) {
+	SetDefaultColumnNameFunc(DefaultSnakeCaseNamer)
+
+	type Details struct {
+		Text *string `json:"text"`
+		PDF  *string `json:"pdf"`
+	}
+
+	type Travel struct {
+		ID      string   `json:"id"`
+		Name    string   `json:"name"`
+		Details *Details `gorm:"embedded;embeddedPrefix:details_" json:"details"`
+	}
+
+	// Details 為 nil，預期 details_ 欄位都不會出現
+	obj := Travel{
+		ID:      "111",
+		Name:    "No Details",
+		Details: nil,
+	}
+
+	expected := map[string]any{
+		"id":   "111",
+		"name": "No Details",
+	}
+
+	result, err := BuildRDBUpdateMap(obj, nil)
+	require.NoError(t, err)
+	assert.Equal(t, expected, result)
 }
 
 func BenchmarkParseMDBUpdateData(b *testing.B) {
