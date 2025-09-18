@@ -44,6 +44,10 @@ func (e Car) String() string {
 	return carToString[e]
 }
 
+func (e Car) Value() int {
+	return int(e)
+}
+
 func (e Car) IsValid() bool {
 	_, ok := carToString[e]
 	return ok

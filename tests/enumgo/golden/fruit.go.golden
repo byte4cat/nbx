@@ -45,6 +45,10 @@ func (e Fruit) String() string {
 	return fruitToString[e]
 }
 
+func (e Fruit) Value() int {
+	return int(e)
+}
+
 func (e Fruit) IsValid() bool {
 	_, ok := fruitToString[e]
 	return ok

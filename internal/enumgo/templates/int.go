@@ -38,6 +38,10 @@ func (e {{.Def.Type}}) String() string {
 	return {{.Def.Type | lower}}ToString[e]
 }
 
+func (e {{.Def.Type}}) Value() int {
+	return int(e)
+}
+
 func (e {{.Def.Type}}) IsValid() bool {
 	_, ok := {{.Def.Type | lower}}ToString[e]
 	return ok

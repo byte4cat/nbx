@@ -42,6 +42,10 @@ func (e Animal) String() string {
 	return animalToString[e]
 }
 
+func (e Animal) Value() string {
+	return string(e)
+}
+
 func (e Animal) IsValid() bool {
 	_, ok := animalToString[e]
 	return ok
