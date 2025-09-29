@@ -1,106 +1,92 @@
 package logger
 
 import (
-	"sync"
-
-	"errors"
+	"fmt"
 
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
-var (
-	loggerOnce     sync.Once
-	mainAppLogger  *zap.Logger
-	isLevelEnabled = make(map[zapcore.Level]bool)
-	baseLogger     *zap.Logger
-)
+// Infof logs a message at Info level using fmt.Sprintf-style formatting.
+func Infof(msg string, args ...any) {
+	logger.Info(msg, toZapFields(args)...)
+}
 
-// New initializes a zap logger instance with the provided configuration and caller skip.
-// This function is safe to call multiple times but the core logger setup happens only once.
-// It returns the configured logger instance.
-//
-// Parameters:
-//    - cfg: Config structure.
-//    - callerSkip: The number of stack frames to skip to find the original caller.
-//
-// Returns:
-//    - *zap.Logger: the configured zap logger instance.
-//    - error: any error encountered during logger setup.
-//
-// Note: This function does NOT automatically set this logger as the global zap logger.
-// You must call zap.ReplaceGlobals() externally if needed.
-func New(cfg Config, callerSkip int) (*zap.Logger, error) {
-	var core zapcore.Core
+// Info logs a message at Info level with structured fields.
+func Info(msg string, fields ...zap.Field) {
+	logger.Info(msg, fields...)
+}
 
-	loggerOnce.Do(func() {
-		writeSyncer := getWriterSyncer(cfg.LogFilePath)
+// Debugf logs a message at Debug level using fmt.Sprintf-style formatting.
+func Debugf(msg string, args ...any) {
+	logger.Debug(msg, toZapFields(args)...)
+}
 
-		var encoder zapcore.Encoder
-		var defaultLevel zapcore.Level
+// Debug logs a message at Debug level with structured fields.
+func Debug(msg string, fields ...zap.Field) {
+	logger.Debug(msg, fields...)
+}
 
-		switch cfg.Mode {
-		case Mode_Production.String():
-			encoder = getProductionEncoder()
-			defaultLevel = zapcore.InfoLevel
-		default:
-			encoder = getDevelopmentEncoder()
-			defaultLevel = zapcore.DebugLevel
+// Warnf logs a message at Warn level using fmt.Sprintf-style formatting.
+func Warnf(msg string, args ...any) {
+	logger.Warn(msg, toZapFields(args)...)
+}
+
+// Warn logs a message at Warn level with structured fields.
+func Warn(msg string, fields ...zap.Field) {
+	logger.Warn(msg, fields...)
+}
+
+// Errorf logs a message at Error level using fmt.Sprintf-style formatting.
+func Errorf(msg string, args ...any) {
+	logger.Error(msg, toZapFields(args)...)
+}
+
+// Error logs a message at Error level with structured fields.
+func Error(msg string, fields ...zap.Field) {
+	logger.Error(msg, fields...)
+}
+
+// Fatalf logs a message at Fatal level using fmt.Sprintf-style formatting.
+// The application will terminate immediately.
+func Fatalf(msg string, args ...any) {
+	logger.Fatal(msg, toZapFields(args)...)
+}
+
+// Fatal logs a message at Fatal level with structured fields.
+// The application will terminate immediately.
+func Fatal(msg string, fields ...zap.Field) {
+	logger.Fatal(msg, fields...)
+}
+
+// Panicf logs a message at Panic level using fmt.Sprintf-style formatting.
+// It then panics.
+func Panicf(msg string, args ...any) {
+	logger.Panic(msg, toZapFields(args)...)
+}
+
+// Panic logs a message at Panic level with structured fields.
+// It then panics.
+func Panic(msg string, fields ...zap.Field) {
+	logger.Panic(msg, fields...)
+}
+
+// DPanicLevel logs are particularly important errors.
+// In development the logger panics after writing the message.
+func DPanicf(msg string, args ...any) {
+	logger.DPanic(msg, toZapFields(args)...)
+}
+
+func toZapFields(args []any) []zap.Field {
+	fields := make([]zap.Field, 0, len(args)/2)
+	for i := 0; i < len(args)-1; i += 2 {
+		key, ok := args[i].(string)
+		if !ok {
+			key = fmt.Sprintf("invalid_key_%d", i)
 		}
-
-		logLevel := defaultLevel
-		if cfg.LogLevel != nil {
-			logLevel = cfg.LogLevel.ToZapLevel()
-		}
-
-		core = zapcore.NewCore(encoder, writeSyncer, logLevel)
-
-		baseLogger = zap.New(core)
-		mainAppLogger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(callerSkip))
-	})
-
-	return mainAppLogger, nil
-}
-
-func GetLoggerWithoutCaller(cfg Config) (*zap.Logger, error) {
-	if baseLogger == nil {
-		return nil, errors.New("base logger not initialized")
+		fields = append(fields, zap.Any(key, args[i+1]))
 	}
-	return baseLogger, nil
-}
-
-// Sugar wraps the Logger to provide a more ergonomic, but slightly slower, API.
-// Sugaring a Logger is quite inexpensive, so it's reasonable for a single
-// application to use both Loggers and SugaredLoggers, converting between them
-// on the boundaries of performance-sensitive code.
-func Sugar() *zap.SugaredLogger {
-	if mainAppLogger == nil {
-		// Handle case where logger wasn't initialized, maybe return a no-op logger's sugar
-		return zap.NewNop().Sugar()
+	if len(args)%2 != 0 {
+		fields = append(fields, zap.Any("invalid_last_key", args[len(args)-1]))
 	}
-	return mainAppLogger.Sugar()
-}
-
-// IsLevelEnabled checks if a given level is enabled for the main application logger.
-// Ensure mainAppLogger is initialized before calling.
-func IsLevelEnabled(level zapcore.Level) bool {
-	if mainAppLogger == nil {
-		// Handle case where logger wasn't initialized
-		return false
-	}
-
-	// return false // Level not in map? Should not happen for standard levels
-	return mainAppLogger.Core().Enabled(level)
-}
-
-// InitGlobalLogger initializes the global zap logger with the provided
-// configuration and caller skip.
-func InitGlobalLogger(cfg Config, callerSkip int) (*zap.Logger, error) {
-	l, err := New(cfg, callerSkip)
-	if err != nil {
-		return nil, err
-	}
-	zap.ReplaceGlobals(l)
-
-	return l, nil
+	return fields
 }
