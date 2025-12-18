@@ -67,12 +67,12 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 	typ := reflect.TypeOf(x)
 
 	// Handle nil input pointer
-	if typ.Kind() == reflect.Ptr && val.IsNil() {
+	if typ.Kind() == reflect.Pointer && val.IsNil() {
 		return result, nil
 	}
 
 	// Dereference pointer if necessary
-	if typ.Kind() == reflect.Ptr {
+	if typ.Kind() == reflect.Pointer {
 		val = val.Elem()
 		typ = typ.Elem()
 	}
@@ -115,14 +115,14 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 			if strings.Contains(gormTagValue, "embedded") {
 				logger.Debug("processing embedded", zap.String("fieldName", field.Name))
 				embeddedPrefix := ""
-				for _, part := range strings.Split(gormTagValue, ";") {
+				for part := range strings.SplitSeq(gormTagValue, ";") {
 					part = strings.TrimSpace(part)
-					if strings.HasPrefix(part, "embeddedPrefix:") {
-						embeddedPrefix = strings.TrimPrefix(part, "embeddedPrefix:")
+					if after, ok := strings.CutPrefix(part, "embeddedPrefix:"); ok {
+						embeddedPrefix = after
 						break
 					}
 				}
-				if fieldVal.Kind() == reflect.Ptr {
+				if fieldVal.Kind() == reflect.Pointer {
 					if fieldVal.IsNil() {
 						continue
 					}
@@ -139,11 +139,11 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 			isJSONB := strings.Contains(gormTagValue, "type:jsonb") || strings.Contains(gormTagValue, "jsonb")
 
 			if strings.Contains(gormTagValue, "column:") {
-				parts := strings.Split(gormTagValue, ";")
-				for _, part := range parts {
+				parts := strings.SplitSeq(gormTagValue, ";")
+				for part := range parts {
 					part = strings.TrimSpace(part)
-					if strings.HasPrefix(part, "column:") {
-						mapKey = strings.TrimPrefix(part, "column:")
+					if after, ok := strings.CutPrefix(part, "column:"); ok {
+						mapKey = after
 						mapKey = strings.TrimSpace(mapKey)
 						break
 					}
@@ -184,11 +184,11 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 				continue
 			}
 			if isJSONB {
-				if fieldVal.Kind() == reflect.Ptr && fieldVal.IsNil() {
+				if fieldVal.Kind() == reflect.Pointer && fieldVal.IsNil() {
 					continue
 				}
 				valueToMarshal := fieldVal.Interface()
-				if fieldVal.Kind() == reflect.Ptr {
+				if fieldVal.Kind() == reflect.Pointer {
 					valueToMarshal = fieldVal.Elem().Interface()
 				}
 				jsonValue, err := json.Marshal(valueToMarshal)
@@ -199,7 +199,7 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 				result[prefix+mapKey] = json.RawMessage(jsonValue)
 				continue
 			}
-			if fieldVal.Kind() == reflect.Ptr {
+			if fieldVal.Kind() == reflect.Pointer {
 				if !fieldVal.IsNil() {
 					result[prefix+mapKey] = fieldVal.Elem().Interface()
 				}
