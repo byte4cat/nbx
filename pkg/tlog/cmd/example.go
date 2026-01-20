@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	logger := tlog.New(tlog.Config{
+	logger := tlog.New(&tlog.Config{
 		StderrLevel: slog.LevelDebug,
 		FileLevel:   slog.LevelError,
 		LogFilePath: "./test.log",

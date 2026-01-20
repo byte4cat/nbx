@@ -5,10 +5,16 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
-	"github.com/byte4cat/nbx/v2/pkg/logger"
-	"go.uber.org/zap"
 )
+
+// func init() {
+// 	logger := tlog.New(&tlog.Config{
+// 		StderrLevel: slog.LevelDebug,
+// 		FileLevel:   slog.LevelError,
+// 	})
+//
+// 	slog.SetDefault(logger)
+// }
 
 // DefaultColumnNameFunc is the type for a function that provides a default column name
 // for a struct field based on its Go name, used when no tags specify the name.
@@ -105,15 +111,15 @@ func BuildRDBUpdateMap(x any, skipFields []string) (map[string]any, error) {
 			bsonTagValue := field.Tag.Get("bson")
 			jsonTagValue := field.Tag.Get("json")
 
-			logger.Debug("processing field", zap.String("fieldName", field.Name),
-				zap.String("gormTag", gormTagValue), zap.String("bsonTag", bsonTagValue),
-				zap.String("jsonTag", jsonTagValue),
-			)
+			// slog.Debug("processing field", slog.String("fieldName", field.Name),
+			// 	slog.String("gormTag", gormTagValue), slog.String("bsonTag", bsonTagValue),
+			// 	slog.String("jsonTag", jsonTagValue),
+			// )
 
 			// If the field is marked as embedded, recursively flatten its fields.
 			// If an embeddedPrefix is specified, prepend it to all keys from this embedded struct.
 			if strings.Contains(gormTagValue, "embedded") {
-				logger.Debug("processing embedded", zap.String("fieldName", field.Name))
+				// slog.Debug("processing embedded", slog.String("fieldName", field.Name))
 				embeddedPrefix := ""
 				for part := range strings.SplitSeq(gormTagValue, ";") {
 					part = strings.TrimSpace(part)
